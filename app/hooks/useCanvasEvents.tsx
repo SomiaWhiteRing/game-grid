@@ -6,7 +6,7 @@ import { GameCell } from "../types";
 import { CANVAS_CONFIG } from "../constants";
 import { getCellIdFromCoordinates } from "../utils/canvas";
 import { saveToIndexedDB } from "../utils/indexedDB";
-import { getClickArea, cropImageToAspectRatio } from "@/app/utils/canvasHelpers";
+import { getClickArea, cropImageToAspectRatio, hasContent, getCellSlot } from "@/app/utils/canvasHelpers";
 
 interface UseCanvasEventsProps {
   cells: GameCell[]
@@ -18,16 +18,6 @@ interface UseCanvasEventsProps {
   openMainTitleEditDialog: () => void
   onImageDrop?: (cellId: number, file: File) => void // 添加拖拽图片的回调
   forceCanvasRedraw?: () => void // 添加强制Canvas重绘的函数
-}
-
-function hasContent(cell: GameCell) {
-  return !!(cell.name || cell.image);
-}
-
-function getCellSlot(cellId: number) {
-  const row = Math.floor(cellId / CANVAS_CONFIG.gridCols) + 1;
-  const col = (cellId % CANVAS_CONFIG.gridCols) + 1;
-  return `${row}_${col}`;
 }
 
 function trackCellEditForDrag(prevCell: GameCell, nextCell: GameCell) {

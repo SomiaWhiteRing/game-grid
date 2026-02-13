@@ -12,20 +12,11 @@ import { ImageCropDialog } from "./ImageCropDialog";
 import { useCanvasRenderer } from "../hooks/useCanvasRenderer";
 import { useCanvasEvents } from "../hooks/useCanvasEvents";
 import { CANVAS_CONFIG } from "../constants";
+import { hasContent, getCellSlot } from "../utils/canvasHelpers";
 
 interface GameGridProps {
   initialCells: GameCell[];
   onUpdateCells: (cells: GameCell[]) => void;
-}
-
-function hasContent(cell: GameCell) {
-  return !!(cell.name || cell.image);
-}
-
-function getCellSlot(cellId: number) {
-  const row = Math.floor(cellId / CANVAS_CONFIG.gridCols) + 1;
-  const col = (cellId % CANVAS_CONFIG.gridCols) + 1;
-  return `${row}_${col}`;
 }
 
 function buildSignature(locale: string, mainTitle: string, cells: GameCell[]) {

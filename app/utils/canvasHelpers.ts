@@ -1,4 +1,21 @@
 import { CANVAS_CONFIG } from "../constants";
+import { GameCell } from "../types";
+
+/**
+ * 判断单元格是否有内容（游戏名称或图片）
+ */
+export function hasContent(cell: GameCell) {
+  return !!(cell.name || cell.image);
+}
+
+/**
+ * 根据单元格ID计算其在网格中的位置标识（如 "1_2" 表示第1行第2列）
+ */
+export function getCellSlot(cellId: number) {
+  const row = Math.floor(cellId / CANVAS_CONFIG.gridCols) + 1;
+  const col = (cellId % CANVAS_CONFIG.gridCols) + 1;
+  return `${row}_${col}`;
+}
 
 // 判断点击区域类型
 export function getClickArea(
