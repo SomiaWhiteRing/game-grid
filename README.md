@@ -1,8 +1,8 @@
-# GameGrid - 游戏生涯个人喜好表
+# GameGrid - 构成我的9款游戏
 
 ![示例图](screenshot/me.png)
 
-生成你自己的游戏生涯个人喜好表！
+生成你自己的9款游戏页面！
 
 标题，名称，全部可以自由定义！
 
@@ -87,7 +87,7 @@ NEXT_PUBLIC_GA_ID=your_google_analytics_id
 
 ## 致谢
 
-- 特别感谢[游戏生涯个人喜好表（已下线）](https://gamegrid.azurewebsites.net)项目的灵感，本项目是对该创意的致敬。
+- 特别感谢[早期原型项目（已下线）](https://gamegrid.azurewebsites.net)的灵感，本项目是对该创意的致敬。
 - 感谢 [SteamGridDB](https://www.steamgriddb.com/) 和 [Bangumi](https://bgm.tv/) 提供的API支持。
 
 ## 许可证

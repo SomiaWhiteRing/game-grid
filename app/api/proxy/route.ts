@@ -7,7 +7,7 @@ const BANGUMI_USER_AGENT = process.env.BANGUMI_USER_AGENT;
 const ALLOWED_DOMAINS = [
   "lain.bgm.tv",
   "bgm.tv",
-  "steamgriddb.com",
+  "img.bgm.tv",
 ];
 
 function isUrlAllowed(url: string): boolean {

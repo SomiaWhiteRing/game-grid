@@ -1,10 +1,10 @@
 const zhCN = {
   meta: {
-    title: '游戏生涯个人喜好表｜游戏喜好表生成器',
-    description: '创建你的游戏生涯喜好表（游戏喜好表/九宫格），支持多语言与自定义格子，一键导出高清图片。',
+    title: '构成我的9款游戏｜游戏清单生成器',
+    description: '创建你的“构成我的9款游戏”页面，支持多语言与自定义格子，一键导出高清图片。',
   },
   global: {
-    main_title: '游戏生涯个人喜好表',
+    main_title: '构成我的9款游戏',
   },
   cell_titles: [
     '最爱的',
@@ -52,14 +52,14 @@ const zhCN = {
     made_with: 'made with Copilot & Codex',
     if_useful_star: '如果觉得对你有用请点 →',
     friend_link: '友情链接：',
-    friend_link_movie: '电影生涯个人喜好表',
+    friend_link_movie: '电影生涯清单',
     powered_by: 'Powered by SteamGridDB & Bangumi',
   },
   legal: {
     copyright_title: '版权声明',
     privacy_title: '隐私协议',
     copyright_p1:
-      '本网站为个人非商业项目，仅提供“游戏生涯个人喜好表”等图片生成工具，不提供任何游戏、影视、音乐、电子书等受版权保护作品的下载、在线播放或获取渠道。',
+      '本网站为个人非商业项目，仅提供“构成我的9款游戏”等图片生成工具，不提供任何游戏、影视、音乐、电子书等受版权保护作品的下载、在线播放或获取渠道。',
     copyright_p2:
       '页面中展示的游戏名称与封面等资料来自第三方接口（如 SteamGridDB、Bangumi），相关版权归原权利人所有，仅用于信息展示和个人喜好整理。如认为本站内容存在侵权或不当使用，请通过 GitHub 仓库 Issues 联系维护者，我们会尽快处理。',
     copyright_p3:
@@ -75,7 +75,7 @@ const zhCN = {
   },
   seo: {
     intro:
-      '游戏生涯个人喜好表（也常称作“游戏生涯喜好表”、“游戏喜好表”、“游戏喜好九宫格”）在线生成器。支持多语言标题与自定义格子，拖拽或搜索添加封面，一键导出高分辨率图片。',
+      '“构成我的9款游戏”在线生成器。支持多语言标题与自定义格子，拖拽或搜索添加封面，一键导出高分辨率图片。',
   },
   search: {
     title: '搜索游戏',

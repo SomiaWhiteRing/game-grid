@@ -5,14 +5,6 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "cdn2.steamgriddb.com",
-      },
-      {
-        protocol: "https",
-        hostname: "images.igdb.com",
-      },
-      {
-        protocol: "https",
         hostname: "cdn.cloudflare.steamstatic.com",
       },
       {

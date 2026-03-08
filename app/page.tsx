@@ -1,2 +1,5 @@
-// Legacy root page remains empty; middleware redirects to /<locale>
-export default function Home() { return null }
+import GameGridV3App from "@/app/components/GameGridV3App";
+
+export default function HomePage() {
+  return <GameGridV3App />;
+}

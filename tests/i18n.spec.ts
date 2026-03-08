@@ -1,21 +1,29 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from "@playwright/test";
 
-const locales = ['zh-CN','zh-TW','en','ja','ko','fr','de','es','pt','it','ru','nl','pl','tr'];
+test.describe.configure({ mode: "serial" });
 
-for (const locale of locales) {
-  test(`renders home for ${locale}`, async ({ page }) => {
+const legacyLocales = [
+  "zh-CN",
+  "zh-TW",
+  "en",
+  "ja",
+];
+
+test("renders simplified Chinese homepage", async ({ page }) => {
+  await page.goto("/");
+  await expect(
+    page.getByRole("heading", { name: "构成我的9款游戏" })
+  ).toBeVisible();
+  await expect(page.getByText("0 / 9 已选择")).toBeVisible();
+});
+
+for (const locale of legacyLocales) {
+  test(`redirects /${locale} to /`, async ({ page }) => {
     await page.goto(`/${locale}`);
-    // Main canvas should exist
-    const canvas = page.locator('canvas');
-    await expect(canvas).toBeVisible();
-
-    // Generate button visible and not overflowing
-    const button = page.getByRole('button');
-    await expect(button.first()).toBeVisible();
-
-    // Check no horizontal overflow in tip paragraph
-    const tip = page.locator('text=/.+/').first();
-    await expect(page).toHaveJSProperty('scrollWidth', await page.evaluate(() => document.documentElement.scrollWidth));
+    await expect(page).toHaveURL(/\/$/);
+    await expect(
+      page.getByRole("heading", { name: "构成我的9款游戏" })
+    ).toBeVisible();
   });
 }
 
