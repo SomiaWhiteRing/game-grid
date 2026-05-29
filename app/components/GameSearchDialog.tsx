@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button"
 import { Gamepad2, Loader2, AlertCircle, Search, RefreshCw, Info, Upload } from "lucide-react"
 import { GameSearchResult } from "../types"
 import { useI18n } from "@/lib/i18n/provider"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { toProxiedBangumiImageUrl } from "../utils/imageProxy"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
   Tooltip,
   TooltipContent,
@@ -478,32 +479,36 @@ export function GameSearchDialog({ isOpen, onOpenChange, onSelectGame, onUploadI
         <div className="max-h-[40vh] sm:max-h-[300px] md:max-h-[350px] lg:max-h-[400px] overflow-y-auto">
           {searchResults.length > 0 ? (
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
-              {searchResults.map((game) => (
-                <div
-                  key={game.id || game.name}
-                  onClick={() => onSelectGame(game)}
-                  className="cursor-pointer border rounded p-1 sm:p-2 hover:bg-gray-50 transition-colors"
-                  title={`${game.name}`}
-                >
-                  <div className="relative w-full h-0 pb-[133.33%] rounded overflow-hidden bg-gray-100">
-                    {game.image ? (
-                      <NextImage 
-                        src={game.image} 
-                        alt={game.name} 
-                        fill 
-                        className="object-cover"
-                        sizes="(max-width: 768px) 40vw, 20vw"
-                        loading="lazy"
-                      />
-                    ) : (
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <Gamepad2 className="w-8 h-8 text-gray-400" />
-                      </div>
-                    )}
+              {searchResults.map((game) => {
+                const imageSrc = toProxiedBangumiImageUrl(game.image);
+
+                return (
+                  <div
+                    key={game.id || game.name}
+                    onClick={() => onSelectGame(game)}
+                    className="cursor-pointer border rounded p-1 sm:p-2 hover:bg-gray-50 transition-colors"
+                    title={`${game.name}`}
+                  >
+                    <div className="relative w-full h-0 pb-[133.33%] rounded overflow-hidden bg-gray-100">
+                      {imageSrc ? (
+                        <NextImage
+                          src={imageSrc}
+                          alt={game.name}
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 768px) 40vw, 20vw"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <Gamepad2 className="w-8 h-8 text-gray-400" />
+                        </div>
+                      )}
+                    </div>
+                    <p className="text-xs sm:text-sm truncate mt-1 sm:mt-2">{game.name}</p>
                   </div>
-                  <p className="text-xs sm:text-sm truncate mt-1 sm:mt-2">{game.name}</p>
-                </div>
-              ))}
+                );
+              })}
             </div>
           ) : renderSearchStatus()}
         </div>

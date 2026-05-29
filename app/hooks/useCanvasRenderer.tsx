@@ -4,6 +4,7 @@ import { useState, useEffect, RefObject } from "react"
 import { GameCell, GlobalConfig } from "../types"
 import { CANVAS_CONFIG, isBrowser } from "../constants"
 import { gamepadIconPath } from "../utils/canvas"
+import { toProxiedBangumiImageUrl } from "../utils/imageProxy"
 
 interface UseCanvasRendererProps {
   canvasRef: RefObject<HTMLCanvasElement>
@@ -228,6 +229,7 @@ export function useCanvasRenderer({
       // 设置显示尺寸
       canvas.style.width = `${CANVAS_CONFIG.width * newScale}px`;
       canvas.style.height = `${CANVAS_CONFIG.height * newScale}px`;
+      setCanvasLoaded(true);
 
       // 使用 requestAnimationFrame 确保在下一帧重绘
       requestAnimationFrame(() => {
@@ -268,11 +270,14 @@ export function useCanvasRenderer({
     cells.forEach((cell, index) => {
       if (cell.image && !cell.imageObj) {
         try {
+          const imageSrc = toProxiedBangumiImageUrl(cell.image);
+          if (!imageSrc) return;
+
           // 使用全局 window.Image 构造函数而不是直接使用 Image
           const img = new window.Image();
           img.crossOrigin = "anonymous";
           img.onerror = (err) => {
-            console.error(`图片加载失败: ${cell.image}`, err);
+            console.error(`图片加载失败: ${imageSrc}`, err);
           };
           img.onload = () => {
             setCells((prev) => {
@@ -281,7 +286,7 @@ export function useCanvasRenderer({
               return newCells;
             });
           };
-          img.src = cell.image;
+          img.src = imageSrc;
         } catch (error) {
           console.error("创建图片对象失败:", error);
         }

@@ -16,6 +16,10 @@ const nextConfig = {
         hostname: "cdn.cloudflare.steamstatic.com",
       },
       {
+        protocol: "https",
+        hostname: "my9.shatranj.space",
+      },
+      {
         protocol: "http",
         hostname: "lain.bgm.tv",
       },

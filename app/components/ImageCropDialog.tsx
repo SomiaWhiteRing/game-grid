@@ -5,6 +5,7 @@ import Cropper from "react-easy-crop"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { useI18n } from "@/lib/i18n/provider"
+import { toProxiedBangumiImageUrl } from "../utils/imageProxy"
 import type { Area } from "react-easy-crop"
 
 interface ImageCropDialogProps {
@@ -77,6 +78,7 @@ const createCroppedImage = async (
  */
 export function ImageCropDialog({ isOpen, onOpenChange, imageSrc, onConfirm }: ImageCropDialogProps) {
   const { t } = useI18n()
+  const displayImageSrc = toProxiedBangumiImageUrl(imageSrc)
   
   const [crop, setCrop] = useState({ x: 0, y: 0 })
   const [zoom, setZoom] = useState(1)
@@ -90,11 +92,11 @@ export function ImageCropDialog({ isOpen, onOpenChange, imageSrc, onConfirm }: I
   }, [])
 
   const handleConfirm = async () => {
-    if (!imageSrc || !croppedAreaPixels) return
+    if (!displayImageSrc || !croppedAreaPixels) return
     
     setIsProcessing(true)
     try {
-      const croppedImage = await createCroppedImage(imageSrc, croppedAreaPixels)
+      const croppedImage = await createCroppedImage(displayImageSrc, croppedAreaPixels)
       onConfirm(croppedImage)
       onOpenChange(false)
     } catch (error) {
@@ -139,14 +141,14 @@ export function ImageCropDialog({ isOpen, onOpenChange, imageSrc, onConfirm }: I
                 <p>{t('error.image_load_failed_retry')}</p>
               </div>
             )}
-            {!imageError && !imageLoaded && imageSrc && (
+            {!imageError && !imageLoaded && displayImageSrc && (
               <div className="flex items-center justify-center h-full text-gray-500">
                 <p>{t('error.loading')}</p>
               </div>
             )}
-            {imageSrc && !imageError && (
+            {displayImageSrc && !imageError && (
               <Cropper
-                image={imageSrc}
+                image={displayImageSrc}
                 crop={crop}
                 zoom={zoom}
                 aspect={3 / 4}

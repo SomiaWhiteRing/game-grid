@@ -1,4 +1,5 @@
 import { CANVAS_CONFIG } from "../constants";
+import { toProxiedBangumiImageUrl } from "./imageProxy";
 
 // 判断点击区域类型
 export function getClickArea(
@@ -50,6 +51,13 @@ export function getClickArea(
 // 裁剪图片为3:4的长宽比
 export function cropImageToAspectRatio(imageUrl: string): Promise<string> {
   return new Promise((resolve, reject) => {
+    const imageSrc = toProxiedBangumiImageUrl(imageUrl);
+
+    if (!imageSrc) {
+      reject(new Error("图片URL为空"));
+      return;
+    }
+
     const img = new Image();
     img.onload = () => {
       const canvas = document.createElement("canvas");
@@ -100,16 +108,23 @@ export function cropImageToAspectRatio(imageUrl: string): Promise<string> {
       resolve(canvas.toDataURL("image/png"));
     };
     img.onerror = () => reject(new Error("图片加载失败"));
-    img.src = imageUrl;
+    img.src = imageSrc;
   });
 }
 
 // 预加载图片并返回Promise
 export function preloadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
+    const imageSrc = toProxiedBangumiImageUrl(src);
+
+    if (!imageSrc) {
+      reject(new Error("图片URL为空"));
+      return;
+    }
+
     const img = new Image();
     img.onload = () => resolve(img);
     img.onerror = (e) => reject(e);
-    img.src = src;
+    img.src = imageSrc;
   });
 }
