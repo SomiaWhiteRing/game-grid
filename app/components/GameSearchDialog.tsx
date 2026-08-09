@@ -497,7 +497,7 @@ export function GameSearchDialog({ isOpen, onOpenChange, onSelectGame, onUploadI
                           fill
                           className="object-cover"
                           sizes="(max-width: 768px) 40vw, 20vw"
-                          loading="lazy"
+                          loading="eager"
                         />
                       ) : (
                         <div className="absolute inset-0 flex items-center justify-center">
