@@ -27,8 +27,8 @@ const ru = {
     'Ностальгия',
     'Скрытый шедевр',
   ],
-  ui: { tip_edit: 'Подсказка: нажмите для редактирования. Перетащите изображения в ячейки.', generate: 'Создать {title}!' },
-  dialog: { edit_title: 'Редактировать заголовок', edit_game_name: 'Редактировать имя', edit_main_title: 'Редактировать основной заголовок' },
+  ui: { tip_edit: 'Подсказка: нажмите для редактирования. Перетащите изображения в ячейки.', generate: 'Создать {title}!', columns: 'Столбцов в строке:', columns_value: '{count} столбцов' },
+  dialog: { edit_title: 'Редактировать заголовок', edit_game_name: 'Редактировать имя', edit_description: 'Редактировать описание', edit_main_title: 'Редактировать основной заголовок' },
   common: { cancel: 'Отменить', save: 'Сохранить', close: 'Закрыть', confirm: 'Подтвердить' },
   footer: {
     made_with: 'made with Copilot & Codex',

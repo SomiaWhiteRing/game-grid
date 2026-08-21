@@ -34,12 +34,15 @@ const en = {
   ],
   ui: {
     tip_edit:
-      'Tip: Click the top title, cell title or game name to edit. You can also drag-and-drop images directly into cells.',
+      'Tip: Click the top title, cell title, game name or description to edit. You can also drag-and-drop images directly into cells.',
     generate: 'Generate {title}!',
+    columns: 'Columns per row:',
+    columns_value: '{count} columns',
   },
   dialog: {
     edit_title: 'Edit Title',
     edit_game_name: 'Edit Game Name',
+    edit_description: 'Edit Description',
     edit_main_title: 'Edit Main Title',
   },
   common: {

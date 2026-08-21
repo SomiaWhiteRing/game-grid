@@ -6,6 +6,8 @@
 
 标题，名称，全部可以自由定义！
 
+> 本 Fork 新增了可修改列数、单项自定义描述和 Windows 本地 EXE。详细说明请参阅 [本 Fork 的特性](FORK_FEATURES.md)。
+
 ## 欢迎Fork！
 
 在遵守MIT License的前提下，欢迎自由的改写表格内容或自定义数据源进行分发。  
@@ -80,6 +82,16 @@ NEXT_PUBLIC_GA_ID=your_google_analytics_id
 ### 其他平台部署
 
 确保在部署平台的环境变量配置中添加上述所有必需的环境变量。Google Analytics ID 为可选配置，不配置则不会启用追踪功能。
+
+## Windows 本地 EXE
+
+安装依赖后运行以下命令，即可在 `dist/` 中生成可直接双击打开的 Windows 可执行文件：
+
+```bash
+npm run build:desktop
+```
+
+生成的 `GameGrid-*-portable.exe` 不需要单独安装 Node.js。游戏搜索仍需 API 密钥；如需使用，请在 EXE 同级目录创建 `.env.local`，并按上方“环境变量”章节填写密钥。未配置密钥时，仍可使用本地图片上传、编辑与导出功能。
 
 ## 开发历程
 

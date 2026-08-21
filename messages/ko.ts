@@ -34,10 +34,13 @@ const ko = {
     tip_edit:
       '힌트: 상단 제목, 셀 제목 또는 게임 이름을 클릭해 편집할 수 있습니다. 이미지를 셀로 드래그 앤 드롭도 가능.',
     generate: '{title} 생성!',
+    columns: '행당 열 수:',
+    columns_value: '{count}열',
   },
   dialog: {
     edit_title: '제목 편집',
     edit_game_name: '게임 이름 편집',
+    edit_description: '설명 편집',
     edit_main_title: '메인 제목 편집',
   },
   common: { cancel: '취소', save: '저장', close: '닫기', confirm: '확인' },

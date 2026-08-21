@@ -26,6 +26,8 @@ export const CANVAS_CONFIG: CanvasConfig = {
   cellNameFontSize: 28, 
   cellTitleMargin: 12, 
   cellNameMargin: 12, 
+  cellDescriptionFontSize: 24,
+  cellDescriptionMargin: 8,
 };
 
 /**

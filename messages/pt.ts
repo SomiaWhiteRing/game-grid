@@ -27,8 +27,8 @@ const pt = {
     'Nostalgia',
     'Jóia escondida',
   ],
-  ui: { tip_edit: 'Dica: clique para editar. Arraste imagens para as células.', generate: 'Gerar {title}!' },
-  dialog: { edit_title: 'Editar título', edit_game_name: 'Editar nome', edit_main_title: 'Editar título principal' },
+  ui: { tip_edit: 'Dica: clique para editar. Arraste imagens para as células.', generate: 'Gerar {title}!', columns: 'Colunas por linha:', columns_value: '{count} colunas' },
+  dialog: { edit_title: 'Editar título', edit_game_name: 'Editar nome', edit_description: 'Editar descrição', edit_main_title: 'Editar título principal' },
   common: { cancel: 'Cancelar', save: 'Salvar', close: 'Fechar', confirm: 'Confirmar' },
   footer: {
     made_with: 'made with Copilot & Codex',

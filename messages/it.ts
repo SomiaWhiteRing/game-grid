@@ -27,8 +27,8 @@ const it = {
     'Nostalgia',
     'Gioiello nascosto',
   ],
-  ui: { tip_edit: 'Suggerimento: clic per modificare. Trascina immagini nelle celle.', generate: 'Genera {title}!' },
-  dialog: { edit_title: 'Modifica titolo', edit_game_name: 'Modifica nome', edit_main_title: 'Modifica titolo principale' },
+  ui: { tip_edit: 'Suggerimento: clic per modificare. Trascina immagini nelle celle.', generate: 'Genera {title}!', columns: 'Colonne per riga:', columns_value: '{count} colonne' },
+  dialog: { edit_title: 'Modifica titolo', edit_game_name: 'Modifica nome', edit_description: 'Modifica descrizione', edit_main_title: 'Modifica titolo principale' },
   common: { cancel: 'Annulla', save: 'Salva', close: 'Chiudi', confirm: 'Conferma' },
   footer: {
     made_with: 'made with Copilot & Codex',

@@ -27,8 +27,8 @@ const nl = {
     'Nostalgie',
     'Verborgen parel',
   ],
-  ui: { tip_edit: 'Tip: klik om te bewerken. Sleep afbeeldingen naar cellen.', generate: 'Genereer {title}!' },
-  dialog: { edit_title: 'Titel bewerken', edit_game_name: 'Spelnaam bewerken', edit_main_title: 'Hoofdtitel bewerken' },
+  ui: { tip_edit: 'Tip: klik om te bewerken. Sleep afbeeldingen naar cellen.', generate: 'Genereer {title}!', columns: 'Kolommen per rij:', columns_value: '{count} kolommen' },
+  dialog: { edit_title: 'Titel bewerken', edit_game_name: 'Spelnaam bewerken', edit_description: 'Beschrijving bewerken', edit_main_title: 'Hoofdtitel bewerken' },
   common: { cancel: 'Annuleren', save: 'Opslaan', close: 'Sluiten', confirm: 'Bevestigen' },
   footer: {
     made_with: 'made with Copilot & Codex',
