@@ -6,6 +6,8 @@
 
 标题，名称，全部可以自由定义！
 
+> 本 Fork 新增了可修改列数、单项自定义描述和 Windows 本地 EXE。详细说明请参阅 [本 Fork 的特性](FORK_FEATURES.md)。
+
 ## 欢迎Fork！
 
 在遵守MIT License的前提下，欢迎自由的改写表格内容或自定义数据源进行分发。  
