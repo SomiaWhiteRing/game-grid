@@ -134,7 +134,7 @@ export const gamepadIconPath = (x: number, y: number, size: number): DrawCommand
 export function getCellIdFromCoordinates(
   x: number,
   y: number,
-  config: CanvasConfig
+  config: Pick<CanvasConfig, "padding" | "titleHeight" | "width" | "height" | "gridRows" | "gridCols">
 ): number | null {
   // 计算网格区域
   const gridTop = config.padding + config.titleHeight;

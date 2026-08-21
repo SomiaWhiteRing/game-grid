@@ -27,8 +27,8 @@ const tr = {
     'Nostalji',
     'Gizli mücevher',
   ],
-  ui: { tip_edit: 'İpucu: Düzenlemek için tıklayın. Görselleri hücrelere sürükleyin.', generate: '{title} oluştur!' },
-  dialog: { edit_title: 'Başlığı düzenle', edit_game_name: 'Oyun adını düzenle', edit_main_title: 'Ana başlığı düzenle' },
+  ui: { tip_edit: 'İpucu: Düzenlemek için tıklayın. Görselleri hücrelere sürükleyin.', generate: '{title} oluştur!', columns: 'Satır başına sütun:', columns_value: '{count} sütun' },
+  dialog: { edit_title: 'Başlığı düzenle', edit_game_name: 'Oyun adını düzenle', edit_description: 'Açıklamayı düzenle', edit_main_title: 'Ana başlığı düzenle' },
   common: { cancel: 'İptal', save: 'Kaydet', close: 'Kapat', confirm: 'Onayla' },
   footer: {
     made_with: 'made with Copilot & Codex',

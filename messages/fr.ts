@@ -27,8 +27,8 @@ const fr = {
     'Nostalgie',
     'Perle méconnue',
   ],
-  ui: { tip_edit: "Astuce : cliquez pour éditer. Vous pouvez aussi glisser-déposer des images.", generate: 'Générer {title} !' },
-  dialog: { edit_title: 'Modifier le titre', edit_game_name: 'Modifier le nom du jeu', edit_main_title: 'Modifier le titre principal' },
+  ui: { tip_edit: "Astuce : cliquez pour éditer. Vous pouvez aussi glisser-déposer des images.", generate: 'Générer {title} !', columns: 'Colonnes par ligne :', columns_value: '{count} colonnes' },
+  dialog: { edit_title: 'Modifier le titre', edit_game_name: 'Modifier le nom du jeu', edit_description: 'Modifier la description', edit_main_title: 'Modifier le titre principal' },
   common: { cancel: 'Annuler', save: 'Enregistrer', close: 'Fermer', confirm: 'Confirmer' },
   footer: {
     made_with: 'made with Copilot & Codex',

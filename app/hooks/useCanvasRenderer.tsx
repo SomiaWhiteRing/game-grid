@@ -5,6 +5,7 @@ import { GameCell, GlobalConfig } from "../types"
 import { CANVAS_CONFIG, isBrowser } from "../constants"
 import { gamepadIconPath } from "../utils/canvas"
 import { toProxiedBangumiImageUrl } from "../utils/imageProxy"
+import { getGridLayout } from "../utils/gridLayout"
 
 interface UseCanvasRendererProps {
   canvasRef: RefObject<HTMLCanvasElement>
@@ -31,6 +32,8 @@ export function useCanvasRenderer({
 
     const ctx = canvas.getContext("2d")
     if (!ctx) return
+
+    const layout = getGridLayout(globalConfig.gridCols, cells.length)
 
     try {
       // 清空画布
@@ -61,18 +64,12 @@ export function useCanvasRenderer({
       ctx.fillText(title, canvas.width / 2, titleY)
 
       // 计算网格区域
-      const gridTop = CANVAS_CONFIG.padding + CANVAS_CONFIG.titleHeight
-      const gridWidth = canvas.width - CANVAS_CONFIG.padding * 2
-      const gridHeight = canvas.height - gridTop - CANVAS_CONFIG.padding
-
-      // 计算单元格尺寸
-      const cellWidth = gridWidth / CANVAS_CONFIG.gridCols
-      const cellHeight = gridHeight / CANVAS_CONFIG.gridRows
+      const { gridTop, cellWidth, cellHeight, coverWidth, coverHeight } = layout
 
       // 绘制单元格
       cells.forEach((cell, index) => {
-        const row = Math.floor(index / CANVAS_CONFIG.gridCols)
-        const col = index % CANVAS_CONFIG.gridCols
+        const row = Math.floor(index / layout.gridCols)
+        const col = index % layout.gridCols
 
         const x = CANVAS_CONFIG.padding + col * cellWidth
         const y = gridTop + row * cellHeight
@@ -109,8 +106,6 @@ export function useCanvasRenderer({
         }
 
         // 计算封面区域
-        const coverWidth = cellWidth - CANVAS_CONFIG.cellPadding * 2 - CANVAS_CONFIG.cellBorderWidth * 2
-        const coverHeight = coverWidth / CANVAS_CONFIG.coverRatio
         const coverX = x + CANVAS_CONFIG.cellPadding + CANVAS_CONFIG.cellBorderWidth
         const coverY = y + CANVAS_CONFIG.cellPadding + CANVAS_CONFIG.cellBorderWidth
 
@@ -157,41 +152,35 @@ export function useCanvasRenderer({
         )
         ctx.textBaseline = prevBaseline
 
-        // 如果有游戏名称，绘制游戏名称
-        if (cell.name) {
-          // 副标题使用 alphabetic 基线，配合基于字号的 Y 计算，避免偏下
-          const prevBaseline2 = ctx.textBaseline
-          ctx.textBaseline = "alphabetic"
-          ctx.fillStyle = "#4b5563" // 灰色文字
-          ctx.font = `${CANVAS_CONFIG.cellNameFontSize}px sans-serif`
+        const textMaxWidth = cellWidth - CANVAS_CONFIG.cellPadding * 4
+        const nameY =
+          coverY +
+          coverHeight +
+          CANVAS_CONFIG.cellTitleMargin +
+          baseCellTitleFont +
+          CANVAS_CONFIG.cellNameMargin +
+          CANVAS_CONFIG.cellNameFontSize
 
-          // 截断过长的游戏名称
-          let gameName = cell.name
-          let textWidth = ctx.measureText(gameName).width
-          const maxWidth = cellWidth - CANVAS_CONFIG.cellPadding * 4
+        drawTruncatedText(
+          ctx,
+          cell.name,
+          x + cellWidth / 2,
+          nameY,
+          textMaxWidth,
+          CANVAS_CONFIG.cellNameFontSize,
+          "#4b5563"
+        )
 
-          if (textWidth > maxWidth) {
-            // 截断文本并添加省略号
-            let truncated = gameName
-            while (textWidth > maxWidth && truncated.length > 0) {
-              truncated = truncated.slice(0, -1)
-              textWidth = ctx.measureText(truncated + "...").width
-            }
-            gameName = truncated + "..."
-          }
-
-          ctx.fillText(
-            gameName,
-            x + cellWidth / 2,
-            coverY +
-              coverHeight +
-              CANVAS_CONFIG.cellTitleMargin +
-              baseCellTitleFont +
-              CANVAS_CONFIG.cellNameMargin +
-              CANVAS_CONFIG.cellNameFontSize,
-          )
-          ctx.textBaseline = prevBaseline2
-        }
+        const descriptionY = nameY + CANVAS_CONFIG.cellDescriptionMargin + CANVAS_CONFIG.cellDescriptionFontSize
+        drawTruncatedText(
+          ctx,
+          cell.description,
+          x + cellWidth / 2,
+          descriptionY,
+          textMaxWidth,
+          CANVAS_CONFIG.cellDescriptionFontSize,
+          "#6b7280"
+        )
       })
 
       // 添加水印
@@ -215,20 +204,21 @@ export function useCanvasRenderer({
     const updateScale = () => {
       if (!canvasRef.current) return;
 
+      const layout = getGridLayout(globalConfig.gridCols, cells.length);
       const containerWidth = Math.min(window.innerWidth, 1200);
-      const newScale = containerWidth / CANVAS_CONFIG.width;
+      const newScale = containerWidth / layout.width;
       setScale(newScale);
 
       // 更新Canvas尺寸
       const canvas = canvasRef.current;
       
       // 保持Canvas的实际像素数
-      canvas.width = CANVAS_CONFIG.width;
-      canvas.height = CANVAS_CONFIG.height;
+      canvas.width = layout.width;
+      canvas.height = layout.height;
       
       // 设置显示尺寸
-      canvas.style.width = `${CANVAS_CONFIG.width * newScale}px`;
-      canvas.style.height = `${CANVAS_CONFIG.height * newScale}px`;
+      canvas.style.width = `${layout.width * newScale}px`;
+      canvas.style.height = `${layout.height * newScale}px`;
       setCanvasLoaded(true);
 
       // 使用 requestAnimationFrame 确保在下一帧重绘
@@ -252,7 +242,7 @@ export function useCanvasRenderer({
       window.removeEventListener("resize", handleResize);
       clearTimeout(resizeTimeout);
     };
-  }, [drawCanvas]);
+  }, [cells.length, globalConfig.gridCols]);
 
   // 当cells变化时重新绘制Canvas
   useEffect(() => {
@@ -261,7 +251,7 @@ export function useCanvasRenderer({
         drawCanvas();
       });
     }
-  }, [cells, canvasLoaded, dragOverCellId]);
+  }, [cells, canvasLoaded, dragOverCellId, globalConfig]);
 
   // 加载图片
   useEffect(() => {
@@ -360,6 +350,32 @@ export function useCanvasRenderer({
         ctx.stroke();
       }
     });
+  }
+
+  function drawTruncatedText(
+    ctx: CanvasRenderingContext2D,
+    value: string | undefined,
+    x: number,
+    y: number,
+    maxWidth: number,
+    fontSize: number,
+    color: string
+  ) {
+    if (!value) return;
+
+    ctx.fillStyle = color;
+    ctx.font = `${fontSize}px sans-serif`;
+    ctx.textAlign = "center";
+    const previousBaseline = ctx.textBaseline;
+    ctx.textBaseline = "alphabetic";
+
+    let text = value;
+    while (ctx.measureText(text).width > maxWidth && text.length > 0) {
+      text = text.slice(0, -1);
+    }
+    if (text !== value) text = `${text}...`;
+    ctx.fillText(text, x, y);
+    ctx.textBaseline = previousBaseline;
   }
 
   return {

@@ -11,8 +11,14 @@ import { TextEditDialog } from "./TextEditDialog";
 import { ImageCropDialog } from "./ImageCropDialog";
 import { useCanvasRenderer } from "../hooks/useCanvasRenderer";
 import { useCanvasEvents } from "../hooks/useCanvasEvents";
-import { CANVAS_CONFIG } from "../constants";
 import { toProxiedBangumiImageUrl } from "../utils/imageProxy";
+import {
+  DEFAULT_GRID_COLUMNS,
+  MAX_GRID_COLUMNS,
+  MIN_GRID_COLUMNS,
+  getGridLayout,
+  normalizeGridColumns,
+} from "../utils/gridLayout";
 
 interface GameGridProps {
   initialCells: GameCell[];
@@ -20,29 +26,31 @@ interface GameGridProps {
 }
 
 function hasContent(cell: GameCell) {
-  return !!(cell.name || cell.image);
+  return !!(cell.name || cell.description || cell.image);
 }
 
-function getCellSlot(cellId: number) {
-  const row = Math.floor(cellId / CANVAS_CONFIG.gridCols) + 1;
-  const col = (cellId % CANVAS_CONFIG.gridCols) + 1;
+function getCellSlot(cellId: number, gridCols: number) {
+  const row = Math.floor(cellId / gridCols) + 1;
+  const col = (cellId % gridCols) + 1;
   return `${row}_${col}`;
 }
 
-function buildSignature(locale: string, mainTitle: string, cells: GameCell[]) {
+function buildSignature(locale: string, mainTitle: string, gridCols: number, cells: GameCell[]) {
   const parts = cells.map((cell) => {
     const hasImage = cell.image ? "1" : "0";
     const name = cell.name || "";
-    return `${cell.id}:${cell.title}|${name}|${hasImage}`;
+    const description = cell.description || "";
+    return `${cell.id}:${cell.title}|${name}|${description}|${hasImage}`;
   });
-  return `${locale}|${mainTitle}|${parts.join(";")}`;
+  return `${locale}|${mainTitle}|${gridCols}|${parts.join(";")}`;
 }
 
 function trackCellEditEvent(
   prevCell: GameCell,
   nextCell: GameCell,
   locale: string,
-  t: (key: string) => unknown
+  t: (key: string) => unknown,
+  gridCols: number
 ) {
   const prevHas = hasContent(prevCell);
   const nextHas = hasContent(nextCell);
@@ -55,7 +63,7 @@ function trackCellEditEvent(
   if (!editType) return;
 
   const defaultTitles = t("cell_titles") as string[];
-  const cellSlot = getCellSlot(nextCell.id);
+  const cellSlot = getCellSlot(nextCell.id, gridCols);
   const defaultTitle = defaultTitles[nextCell.id];
   const isDefaultTitle = !!defaultTitle && nextCell.title === defaultTitle;
 
@@ -88,9 +96,11 @@ export function GameGrid({ initialCells, onUpdateCells }: GameGridProps) {
   
   // 全局配置状态
   const [globalConfig, setGlobalConfig] = useState<GlobalConfig>({
-    mainTitle: ""
+    mainTitle: "",
+    gridCols: DEFAULT_GRID_COLUMNS,
   });
   const { t, locale } = useI18n();
+  const canvasLayout = getGridLayout(globalConfig.gridCols, cells.length);
 
   useEffect(() => {
     // 每个语系独立的默认标题与存储键
@@ -99,14 +109,18 @@ export function GameGrid({ initialCells, onUpdateCells }: GameGridProps) {
     if (savedConfig) {
       try {
         const parsed = JSON.parse(savedConfig);
-        setGlobalConfig(parsed);
-        if (typeof document !== "undefined" && parsed.mainTitle) {
-          document.title = parsed.mainTitle;
+        const nextConfig = {
+          mainTitle: typeof parsed.mainTitle === "string" ? parsed.mainTitle : String(t("global.main_title")),
+          gridCols: normalizeGridColumns(parsed.gridCols),
+        };
+        setGlobalConfig(nextConfig);
+        if (typeof document !== "undefined" && nextConfig.mainTitle) {
+          document.title = nextConfig.mainTitle;
         }
       } catch {}
     } else {
       const defaultTitle = String(t("global.main_title"));
-      setGlobalConfig((prev) => ({ ...prev, mainTitle: defaultTitle }));
+      setGlobalConfig({ mainTitle: defaultTitle, gridCols: DEFAULT_GRID_COLUMNS });
       if (typeof document !== "undefined") {
         document.title = defaultTitle;
       }
@@ -118,6 +132,7 @@ export function GameGrid({ initialCells, onUpdateCells }: GameGridProps) {
   const [isSearchDialogOpen, setIsSearchDialogOpen] = useState(false);
   const [isTitleDialogOpen, setIsTitleDialogOpen] = useState(false);
   const [isNameDialogOpen, setIsNameDialogOpen] = useState(false);
+  const [isDescriptionDialogOpen, setIsDescriptionDialogOpen] = useState(false);
   const [isMainTitleDialogOpen, setIsMainTitleDialogOpen] = useState(false);
   const [isCropDialogOpen, setIsCropDialogOpen] = useState(false);
   const [selectedCellId, setSelectedCellId] = useState<number | null>(null);
@@ -147,6 +162,12 @@ export function GameGrid({ initialCells, onUpdateCells }: GameGridProps) {
     setSelectedCellId(cellId);
     setEditingText(cells[cellId].name || "");
     setIsNameDialogOpen(true);
+  };
+
+  const openDescriptionEditDialog = (cellId: number) => {
+    setSelectedCellId(cellId);
+    setEditingText(cells[cellId].description || "");
+    setIsDescriptionDialogOpen(true);
   };
 
   // 打开主标题编辑对话框
@@ -227,7 +248,9 @@ export function GameGrid({ initialCells, onUpdateCells }: GameGridProps) {
     openSearchDialog,
     openTitleEditDialog,
     openNameEditDialog,
+    openDescriptionEditDialog,
     openMainTitleEditDialog,
+    gridCols: globalConfig.gridCols,
     onImageDrop: handleImageDrop,
     forceCanvasRedraw: drawCanvas,
   });
@@ -240,7 +263,7 @@ export function GameGrid({ initialCells, onUpdateCells }: GameGridProps) {
   }, [currentDragOverCellId, globalConfig, drawCanvas]);
 
   const handleGenerate = () => {
-    const signature = buildSignature(locale, globalConfig.mainTitle, cells);
+    const signature = buildSignature(locale, globalConfig.mainTitle, globalConfig.gridCols, cells);
     if (lastSignatureRef.current === signature) {
       // 内容未变化，仅生成图片，不重复统计
       generateImage(canvasRef);
@@ -268,7 +291,7 @@ export function GameGrid({ initialCells, onUpdateCells }: GameGridProps) {
     cells.forEach((cell) => {
       if (!hasContent(cell)) return;
 
-      const cellSlot = getCellSlot(cell.id);
+      const cellSlot = getCellSlot(cell.id, globalConfig.gridCols);
       const defaultTitle = defaultTitles[cell.id];
       const isDefaultTitle = !!defaultTitle && cell.title === defaultTitle;
 
@@ -322,7 +345,7 @@ export function GameGrid({ initialCells, onUpdateCells }: GameGridProps) {
     };
 
     setCells(cells.map((cell) => (cell.id === selectedCellId ? updatedCell : cell)));
-    trackCellEditEvent(prevCell, updatedCell, locale, t);
+    trackCellEditEvent(prevCell, updatedCell, locale, t, globalConfig.gridCols);
     saveToIndexedDB(updatedCell);
     setIsNameDialogOpen(false);
   };
@@ -347,6 +370,23 @@ export function GameGrid({ initialCells, onUpdateCells }: GameGridProps) {
     }
   };
 
+  const handleGridColumnsChange = (value: string) => {
+    const updatedConfig = { ...globalConfig, gridCols: normalizeGridColumns(value) };
+    setGlobalConfig(updatedConfig);
+    localStorage.setItem(`gameGridGlobalConfig_${locale}`, JSON.stringify(updatedConfig));
+  };
+
+  const handleSaveDescription = (newText: string) => {
+    if (selectedCellId === null) return;
+
+    const prevCell = cells[selectedCellId];
+    const updatedCell: GameCell = { ...prevCell, description: newText };
+    setCells(cells.map((cell) => (cell.id === selectedCellId ? updatedCell : cell)));
+    trackCellEditEvent(prevCell, updatedCell, locale, t, globalConfig.gridCols);
+    saveToIndexedDB(updatedCell);
+    setIsDescriptionDialogOpen(false);
+  };
+
   // 加载全局配置
   // 旧版存储迁移（如存在）
   useEffect(() => {
@@ -355,7 +395,10 @@ export function GameGrid({ initialCells, onUpdateCells }: GameGridProps) {
       try {
         const parsed = JSON.parse(legacy);
         const storageKey = `gameGridGlobalConfig_${locale}`;
-        localStorage.setItem(storageKey, JSON.stringify(parsed));
+        localStorage.setItem(storageKey, JSON.stringify({
+          mainTitle: parsed.mainTitle || String(t("global.main_title")),
+          gridCols: normalizeGridColumns(parsed.gridCols),
+        }));
         localStorage.removeItem("gameGridGlobalConfig");
       } catch {}
     }
@@ -379,7 +422,7 @@ export function GameGrid({ initialCells, onUpdateCells }: GameGridProps) {
       };
 
       setCells(cells.map((cell) => (cell.id === selectedCellId ? updatedCell : cell)));
-      trackCellEditEvent(prevCell, updatedCell, locale, t);
+      trackCellEditEvent(prevCell, updatedCell, locale, t, globalConfig.gridCols);
       saveToIndexedDB(updatedCell);
       setIsSearchDialogOpen(false);
       return;
@@ -455,7 +498,7 @@ export function GameGrid({ initialCells, onUpdateCells }: GameGridProps) {
       };
       
       setCells(cells.map((cell) => (cell.id === selectedCellId ? finalUpdatedCell : cell)));
-      trackCellEditEvent(prevCell, finalUpdatedCell, locale, t);
+      trackCellEditEvent(prevCell, finalUpdatedCell, locale, t, globalConfig.gridCols);
       
       // 保存到IndexedDB
       saveToIndexedDB(finalUpdatedCell);
@@ -470,7 +513,7 @@ export function GameGrid({ initialCells, onUpdateCells }: GameGridProps) {
       };
       
       setCells(cells.map((cell) => (cell.id === selectedCellId ? fallbackCell : cell)));
-      trackCellEditEvent(prevCell, fallbackCell, locale, t);
+      trackCellEditEvent(prevCell, fallbackCell, locale, t, globalConfig.gridCols);
       saveToIndexedDB(fallbackCell);
     }
   };
@@ -539,7 +582,7 @@ export function GameGrid({ initialCells, onUpdateCells }: GameGridProps) {
       };
 
       setCells(cells.map((cell) => (cell.id === selectedCellId ? updatedCell : cell)));
-      trackCellEditEvent(prevCell, updatedCell, locale, t);
+      trackCellEditEvent(prevCell, updatedCell, locale, t, globalConfig.gridCols);
       saveToIndexedDB(updatedCell);
 
       // 清理状态
@@ -551,6 +594,23 @@ export function GameGrid({ initialCells, onUpdateCells }: GameGridProps) {
 
   return (
     <>
+      <div className="mt-4 flex items-center gap-2 text-sm text-gray-600">
+        <label htmlFor="grid-columns">{t("ui.columns")}</label>
+        <select
+          id="grid-columns"
+          value={globalConfig.gridCols}
+          onChange={(event) => handleGridColumnsChange(event.target.value)}
+          className="h-9 rounded-md border border-input bg-background px-2 shadow-sm"
+        >
+          {Array.from(
+            { length: MAX_GRID_COLUMNS - MIN_GRID_COLUMNS + 1 },
+            (_, index) => MIN_GRID_COLUMNS + index
+          ).map((columns) => (
+            <option key={columns} value={columns}>{t("ui.columns_value", { count: columns })}</option>
+          ))}
+        </select>
+      </div>
+
       <canvas
         ref={canvasRef}
         onClick={handleCanvasClick}
@@ -559,8 +619,8 @@ export function GameGrid({ initialCells, onUpdateCells }: GameGridProps) {
         onDrop={handleDrop}
         className="cursor-pointer"
         style={{
-          width: `${CANVAS_CONFIG.width * scale}px`,
-          height: `${CANVAS_CONFIG.height * scale}px`,
+          width: `${canvasLayout.width * scale}px`,
+          height: `${canvasLayout.height * scale}px`,
           maxWidth: "100%",
         }}
       />
@@ -591,6 +651,14 @@ export function GameGrid({ initialCells, onUpdateCells }: GameGridProps) {
         title={String(t('dialog.edit_title'))}
         defaultValue={editingText}
         onSave={handleSaveTitle}
+      />
+
+      <TextEditDialog
+        isOpen={isDescriptionDialogOpen}
+        onOpenChange={setIsDescriptionDialogOpen}
+        title={String(t('dialog.edit_description'))}
+        defaultValue={editingText}
+        onSave={handleSaveDescription}
       />
       
       {/* 游戏名称编辑对话框 */}

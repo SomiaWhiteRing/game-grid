@@ -7,6 +7,7 @@ import { CANVAS_CONFIG } from "../constants";
 import { getCellIdFromCoordinates } from "../utils/canvas";
 import { saveToIndexedDB } from "../utils/indexedDB";
 import { getClickArea, cropImageToAspectRatio } from "@/app/utils/canvasHelpers";
+import { getGridLayout } from "../utils/gridLayout";
 
 interface UseCanvasEventsProps {
   cells: GameCell[]
@@ -15,7 +16,9 @@ interface UseCanvasEventsProps {
   openSearchDialog: (cellId: number) => void
   openTitleEditDialog: (cellId: number) => void
   openNameEditDialog: (cellId: number) => void
-  openMainTitleEditDialog: () => void
+  openDescriptionEditDialog?: (cellId: number) => void
+  openMainTitleEditDialog?: () => void
+  gridCols?: number
   onImageDrop?: (cellId: number, file: File) => void // 添加拖拽图片的回调
   forceCanvasRedraw?: () => void // 添加强制Canvas重绘的函数
 }
@@ -24,13 +27,13 @@ function hasContent(cell: GameCell) {
   return !!(cell.name || cell.image);
 }
 
-function getCellSlot(cellId: number) {
-  const row = Math.floor(cellId / CANVAS_CONFIG.gridCols) + 1;
-  const col = (cellId % CANVAS_CONFIG.gridCols) + 1;
+function getCellSlot(cellId: number, gridCols: number) {
+  const row = Math.floor(cellId / gridCols) + 1;
+  const col = (cellId % gridCols) + 1;
   return `${row}_${col}`;
 }
 
-function trackCellEditForDrag(prevCell: GameCell, nextCell: GameCell) {
+function trackCellEditForDrag(prevCell: GameCell, nextCell: GameCell, gridCols: number) {
   const prevHas = hasContent(prevCell);
   const nextHas = hasContent(nextCell);
 
@@ -41,7 +44,7 @@ function trackCellEditForDrag(prevCell: GameCell, nextCell: GameCell) {
 
   if (!editType) return;
 
-  const cellSlot = getCellSlot(nextCell.id);
+  const cellSlot = getCellSlot(nextCell.id, gridCols);
 
   const gameName = nextCell.name
     ? nextCell.name.slice(0, 80)
@@ -67,7 +70,9 @@ export function useCanvasEvents({
   openSearchDialog,
   openTitleEditDialog,
   openNameEditDialog,
-  openMainTitleEditDialog,
+  openDescriptionEditDialog = () => {},
+  openMainTitleEditDialog = () => {},
+  gridCols = CANVAS_CONFIG.gridCols,
   onImageDrop,
   forceCanvasRedraw,
 }: UseCanvasEventsProps) {
@@ -90,10 +95,11 @@ export function useCanvasEvents({
     }
 
     // 检查点击的是哪个单元格
-    const cellId = getCellIdFromCoordinates(x, y, CANVAS_CONFIG);
+    const layout = getGridLayout(gridCols, cells.length);
+    const cellId = getCellIdFromCoordinates(x, y, layout);
     if (cellId !== null) {
       // 检查点击的具体区域
-      const clickArea = getClickArea(x, y, cellId, CANVAS_CONFIG);
+      const clickArea = getClickArea(x, y, cellId, layout);
       console.log(cellId, clickArea);
       
       // 根据点击区域执行不同操作
@@ -106,6 +112,8 @@ export function useCanvasEvents({
       } else if (clickArea === "name") {
         // 点击游戏名称区域，编辑游戏名称
         openNameEditDialog(cellId);
+      } else if (clickArea === "description") {
+        openDescriptionEditDialog(cellId);
       }
     }
   };
@@ -120,7 +128,7 @@ export function useCanvasEvents({
     const y = (e.clientY - rect.top) / scale
 
     // 获取拖拽经过的单元格
-    const cellId = getCellIdFromCoordinates(x, y, CANVAS_CONFIG)
+    const cellId = getCellIdFromCoordinates(x, y, getGridLayout(gridCols, cells.length))
 
     // 更新拖拽经过的单元格ID
     setDragOverCellId(cellId)
@@ -158,7 +166,7 @@ export function useCanvasEvents({
     const y = (e.clientY - rect.top) / scale
 
     // 获取拖拽放置的单元格
-    const cellId = getCellIdFromCoordinates(x, y, CANVAS_CONFIG)
+    const cellId = getCellIdFromCoordinates(x, y, getGridLayout(gridCols, cells.length))
 
     // 清除拖拽状态
     setDragOverCellId(null)
@@ -232,7 +240,7 @@ export function useCanvasEvents({
           return newCells
         })
 
-        trackCellEditForDrag(prevCell, updatedCell);
+        trackCellEditForDrag(prevCell, updatedCell, gridCols);
 
         // 保存到IndexedDB
         await saveToIndexedDB(updatedCell)

@@ -2,10 +2,13 @@
   "name": "gamegrid",
   "version": "0.1.0",
   "private": true,
+  "main": "electron/main.cjs",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "desktop": "electron electron/main.cjs",
+    "build:desktop": "npm run build && node electron/prepare-standalone.cjs && electron-builder --win portable",
     "lint": "next lint",
     "test:e2e": "playwright test",
     "mcp:playwright": "node -e \"require('@playwright/mcp'); console.log('Playwright MCP loaded')\""
@@ -27,12 +30,31 @@
     "tailwind-merge": "^3.0.2",
     "tailwindcss-animate": "^1.0.7"
   },
+  "build": {
+    "appId": "space.shatranj.gamegrid",
+    "productName": "GameGrid",
+    "artifactName": "GameGrid-${version}-portable.${ext}",
+    "asar": false,
+    "electronDist": "node_modules/electron/dist",
+    "files": [
+      "electron/**/*",
+      ".next/standalone/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        "portable"
+      ]
+    }
+  },
   "devDependencies": {
     "@playwright/mcp": "^0.0.41",
     "@playwright/test": "^1.56.0",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "electron": "^42.0.0",
+    "electron-builder": "^26.15.3",
     "eslint": "^8",
     "eslint-config-next": "14.2.16",
     "postcss": "^8",

@@ -27,8 +27,8 @@ const de = {
     'Nostalgie',
     'Verstecktes Juwel',
   ],
-  ui: { tip_edit: 'Tipp: Klicken zum Bearbeiten. Bilder per Drag & Drop in Zellen.', generate: '{title} erzeugen!' },
-  dialog: { edit_title: 'Titel bearbeiten', edit_game_name: 'Spielname bearbeiten', edit_main_title: 'Haupttitel bearbeiten' },
+  ui: { tip_edit: 'Tipp: Klicken zum Bearbeiten. Bilder per Drag & Drop in Zellen.', generate: '{title} erzeugen!', columns: 'Spalten pro Zeile:', columns_value: '{count} Spalten' },
+  dialog: { edit_title: 'Titel bearbeiten', edit_game_name: 'Spielname bearbeiten', edit_description: 'Beschreibung bearbeiten', edit_main_title: 'Haupttitel bearbeiten' },
   common: { cancel: 'Abbrechen', save: 'Speichern', close: 'Schließen', confirm: 'Bestätigen' },
   footer: {
     made_with: 'made with Copilot & Codex',

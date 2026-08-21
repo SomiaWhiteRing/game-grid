@@ -1,25 +1,26 @@
 import { CANVAS_CONFIG } from "../constants";
 import { toProxiedBangumiImageUrl } from "./imageProxy";
+import type { GridLayout } from "./gridLayout";
 
 // 判断点击区域类型
 export function getClickArea(
   x: number,
   y: number,
   cellId: number,
-  canvasConfig: typeof CANVAS_CONFIG
-): "image" | "title" | "name" | null {
+  canvasConfig: Pick<GridLayout, "padding" | "titleHeight" | "width" | "height" | "gridRows" | "gridCols" | "gridTop" | "gridWidth" | "gridHeight" | "cellWidth" | "cellHeight" | "coverHeight">
+): "image" | "title" | "name" | "description" | null {
   // 获取网格区域基础信息
   const { padding, titleHeight, width, height, gridRows, gridCols } =
     canvasConfig;
 
   // 计算网格区域
-  const gridTop = padding + titleHeight;
-  const gridWidth = width - padding * 2;
-  const gridHeight = height - gridTop - padding;
+  const gridTop = canvasConfig.gridTop ?? padding + titleHeight;
+  const gridWidth = canvasConfig.gridWidth ?? width - padding * 2;
+  const gridHeight = canvasConfig.gridHeight ?? height - gridTop - padding;
 
   // 计算单元格尺寸
-  const cellWidth = gridWidth / gridCols;
-  const cellHeight = gridHeight / gridRows;
+  const cellWidth = canvasConfig.cellWidth ?? gridWidth / gridCols;
+  const cellHeight = canvasConfig.cellHeight ?? gridHeight / gridRows;
 
   // 计算当前单元格的行和列
   const row = Math.floor(cellId / gridCols);
@@ -38,14 +39,21 @@ export function getClickArea(
     return null;
   }
 
-  // 划分单元格内的三个区域
-  if (relY < cellHeight * 0.75) {
+  const coverBottom =
+    CANVAS_CONFIG.cellPadding +
+    CANVAS_CONFIG.cellBorderWidth +
+    canvasConfig.coverHeight +
+    CANVAS_CONFIG.cellPadding;
+
+  if (relY < coverBottom) {
     return "image";
-  } else if (relY < cellHeight * 0.9) {
+  } else if (relY < coverBottom + CANVAS_CONFIG.cellTitleMargin + CANVAS_CONFIG.cellTitleFontSize + 12) {
     return "title";
-  } else {
+  } else if (relY < coverBottom + CANVAS_CONFIG.cellTitleMargin + CANVAS_CONFIG.cellTitleFontSize + CANVAS_CONFIG.cellNameMargin + CANVAS_CONFIG.cellNameFontSize + 12) {
     return "name";
   }
+
+  return "description";
 }
 
 // 裁剪图片为3:4的长宽比

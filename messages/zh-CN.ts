@@ -34,12 +34,15 @@ const zhCN = {
   ],
   ui: {
     tip_edit:
-      '提示：点击顶部标题、格子标题或游戏名称可以编辑；也可直接拖拽图片到格子中。',
+      '提示：点击顶部标题、格子标题、游戏名称或描述可以编辑；也可直接拖拽图片到格子中。',
     generate: '生成{title}！',
+    columns: '每行列数：',
+    columns_value: '{count} 列',
   },
   dialog: {
     edit_title: '编辑标题',
     edit_game_name: '编辑游戏名称',
+    edit_description: '编辑描述',
     edit_main_title: '编辑主标题',
   },
   common: {

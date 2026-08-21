@@ -34,12 +34,15 @@ const zhTW = {
   ],
   ui: {
     tip_edit:
-      '提示：點擊頂部標題、格子標題或遊戲名稱可編輯；也可直接拖曳圖片到格子中。',
+      '提示：點擊頂部標題、格子標題、遊戲名稱或描述可編輯；也可直接拖曳圖片到格子中。',
     generate: '生成 {title}！',
+    columns: '每行欄數：',
+    columns_value: '{count} 欄',
   },
   dialog: {
     edit_title: '編輯標題',
     edit_game_name: '編輯遊戲名稱',
+    edit_description: '編輯描述',
     edit_main_title: '編輯主標題',
   },
   common: { cancel: '取消', save: '儲存', close: '關閉', confirm: '確認' },

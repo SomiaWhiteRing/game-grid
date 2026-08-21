@@ -34,10 +34,13 @@ const ja = {
     tip_edit:
       'ヒント: 上部タイトル・セル名・ゲーム名は編集可能。画像をセルへドラッグ＆ドロップもできます。',
     generate: '{title} を生成！',
+    columns: '1行の列数：',
+    columns_value: '{count}列',
   },
   dialog: {
     edit_title: 'タイトルを編集',
     edit_game_name: 'ゲーム名を編集',
+    edit_description: '説明を編集',
     edit_main_title: 'メインタイトルを編集',
   },
   common: { cancel: 'キャンセル', save: '保存', close: '閉じる', confirm: '確認' },

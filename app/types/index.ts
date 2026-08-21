@@ -6,6 +6,7 @@ export interface GameCell {
   title: string;
   image?: string;
   name?: string;
+  description?: string;
   imageObj?: HTMLImageElement | null;
 }
 
@@ -14,6 +15,7 @@ export interface GameCell {
  */
 export interface GlobalConfig {
   mainTitle: string;
+  gridCols: number;
 }
 
 /**
@@ -44,6 +46,8 @@ export interface CanvasConfig {
   cellNameFontSize: number;
   cellTitleMargin: number;
   cellNameMargin: number;
+  cellDescriptionFontSize: number;
+  cellDescriptionMargin: number;
 }
 
 /**

@@ -27,8 +27,8 @@ const pl = {
     'Nostalgia',
     'Ukryty skarb',
   ],
-  ui: { tip_edit: 'Wskazówka: kliknij, aby edytować. Przeciągnij obrazy do komórek.', generate: 'Generuj {title}!' },
-  dialog: { edit_title: 'Edytuj tytuł', edit_game_name: 'Edytuj nazwę', edit_main_title: 'Edytuj tytuł główny' },
+  ui: { tip_edit: 'Wskazówka: kliknij, aby edytować. Przeciągnij obrazy do komórek.', generate: 'Generuj {title}!', columns: 'Kolumn w wierszu:', columns_value: '{count} kolumn' },
+  dialog: { edit_title: 'Edytuj tytuł', edit_game_name: 'Edytuj nazwę', edit_description: 'Edytuj opis', edit_main_title: 'Edytuj tytuł główny' },
   common: { cancel: 'Anuluj', save: 'Zapisz', close: 'Zamknij', confirm: 'Potwierdź' },
   footer: {
     made_with: 'made with Copilot & Codex',
