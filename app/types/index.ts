@@ -53,6 +53,7 @@ export interface GameSearchResult {
   id?: number | string;
   name: string;
   image: string;
+  thumbnail?: string | null;
 }
 
 /**

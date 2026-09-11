@@ -179,6 +179,7 @@ export async function GET(request: Request) {
               }) + '\n'));
 
               let image = null;
+              let thumbnail = null;
 
               // 尝试获取不同尺寸的封面
               const imageFormats = [
@@ -214,6 +215,7 @@ export async function GET(request: Request) {
 
                     if (data.data && data.data.length > 0) {
                       image = data.data[0].url;
+                      thumbnail = typeof data.data[0].thumb === "string" ? data.data[0].thumb : null;
                       console.log(`游戏 ${game.id} 找到${format.name}格式的图片`);
                       break; // 找到图片后停止尝试其他格式
                     } else {
@@ -235,7 +237,8 @@ export async function GET(request: Request) {
                 game: {
                   id: game.id,
                   name: game.name,
-                  image
+                  image,
+                  thumbnail
                 }
               }) + '\n'));
 
