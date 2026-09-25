@@ -1,9 +1,10 @@
-const BANGUMI_IMAGE_PROXY_BASE = "https://my9.shatranj.space/api/image/bgm";
+const BANGUMI_IMAGE_PROXY_ORIGIN = "https://bgm-pic.shatranj.space";
+const BANGUMI_IMAGE_LEGACY_PROXY = "https://my9.shatranj.space/api/image/bgm";
 const BANGUMI_IMAGE_HOSTS = new Set(["lain.bgm.tv", "img.bgm.tv"]);
 const STEAMGRIDDB_IMAGE_HOSTS = new Set(["cdn2.steamgriddb.com"]);
 
 // Search previews do not touch a canvas, so they can load without CORS.
-// Keep the existing proxy for full-resolution selection, cropping and export.
+// Use the image proxy for full-resolution selection, cropping and export.
 export function getSearchImageSources(
   image: string | null | undefined,
   thumbnail?: string | null,
@@ -65,7 +66,11 @@ export function toProxiedBangumiImageUrl(value: string | null | undefined): stri
 
     parsed.protocol = "https:";
     parsed.hash = "";
-    return `${BANGUMI_IMAGE_PROXY_BASE}?url=${encodeURIComponent(parsed.toString())}`;
+    if (parsed.pathname.startsWith("/pic/") && !parsed.search) {
+      const source = parsed.hostname.toLowerCase() === "lain.bgm.tv" ? "lain" : "img";
+      return `${BANGUMI_IMAGE_PROXY_ORIGIN}/${source}${parsed.pathname}`;
+    }
+    return `${BANGUMI_IMAGE_LEGACY_PROXY}?url=${encodeURIComponent(parsed.toString())}`;
   } catch {
     return raw;
   }

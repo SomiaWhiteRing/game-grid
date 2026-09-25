@@ -20,6 +20,10 @@ const nextConfig = {
         hostname: "my9.shatranj.space",
       },
       {
+        protocol: "https",
+        hostname: "bgm-pic.shatranj.space",
+      },
+      {
         protocol: "http",
         hostname: "lain.bgm.tv",
       },
